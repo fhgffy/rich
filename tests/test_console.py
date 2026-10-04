@@ -31,6 +31,14 @@ from rich.status import Status
 from rich.style import Style
 from rich.text import Text
 
+
+@pytest.fixture(autouse=True)
+def _isolate_terminal_size_env(monkeypatch):
+    """Don't let a caller's COLUMNS or LINES override the sizes these tests set."""
+    monkeypatch.delenv("COLUMNS", raising=False)
+    monkeypatch.delenv("LINES", raising=False)
+
+
 os.get_terminal_size
 
 
