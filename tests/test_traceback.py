@@ -124,6 +124,37 @@ def test_print_exception_locals():
     assert "console = <console width=100 None>" in exception_text
 
 
+def test_syntax_error_non_string_message():
+    from xml.etree.ElementTree import ParseError
+    from xml.parsers.expat import ExpatError
+
+    console = Console(width=100, file=io.StringIO())
+    try:
+        raise ParseError(ExpatError("syntax error"))
+    except ParseError:
+        console.print_exception()
+    result = console.file.getvalue()
+    assert "ParseError" in result
+    assert "TypeError" not in result
+
+
+def test_syntax_error_message_str_fails():
+    class BadMsg:
+        def __str__(self):
+            raise RuntimeError("nope")
+
+    console = Console(width=100, file=io.StringIO())
+    err = SyntaxError("placeholder")
+    err.msg = BadMsg()
+    try:
+        raise err
+    except SyntaxError:
+        console.print_exception()
+    result = console.file.getvalue()
+    assert "SyntaxError" in result
+    assert "TypeError" not in result
+
+
 def test_syntax_error():
     console = Console(width=100, file=io.StringIO())
     try:
