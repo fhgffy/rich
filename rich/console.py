@@ -1550,7 +1550,16 @@ class Console:
         def check_text() -> None:
             if text:
                 sep_text = Text(sep, justify=justify, end=end)
-                append(sep_text.join(text))
+                joined = sep_text.join(text)
+                # join() copies justify from the separator. When print() was not
+                # given one, keep a single Text argument's own justify.
+                if justify is None:
+                    piece_justifies = {piece.justify for piece in text}
+                    if len(piece_justifies) == 1:
+                        piece_justify = piece_justifies.pop()
+                        if piece_justify:
+                            joined.justify = piece_justify
+                append(joined)
                 text.clear()
 
         for renderable in objects:

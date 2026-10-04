@@ -31,6 +31,13 @@ from rich.status import Status
 from rich.style import Style
 from rich.text import Text
 
+
+def test_print_keeps_text_justify():
+    console = Console(file=io.StringIO(), width=20, _environ={})
+    console.print(Text("hi", justify="center"))
+    assert console.file.getvalue() == "         hi         \n"
+
+
 os.get_terminal_size
 
 
